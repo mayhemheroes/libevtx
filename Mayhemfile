@@ -1,0 +1,7 @@
+project: libevtx
+target: evtxinfo
+testsuite:
+  - file://tests/data
+
+cmds:
+  - cmd: /install/bin/evtxinfo @@
