@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ubuntu:22.04 as builder
+FROM --platform=linux/amd64 ubuntu:22.04 AS builder
 
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential automake pkg-config autopoint libtool git bison flex
@@ -6,10 +6,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential automake p
 COPY . /repo
 WORKDIR /repo
 RUN ./synclibs.sh
+# libfdata removed tree support after 2023-01-09; remove unused tree/area includes
+RUN sed -i "/#include <libfdata_tree/d; /#include <libfdata_area/d" libevtx/libevtx_libfdata.h
 RUN ./autogen.sh
 RUN ./configure --prefix=/install
 RUN make -j8
 RUN make install
 
-FROM ubuntu:22.04 as package
+FROM ubuntu:22.04 AS package
 COPY --from=builder /install /install
